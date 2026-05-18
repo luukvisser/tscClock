@@ -28,6 +28,7 @@ App {
 	// Route 1
 	property string route1Start        : "06:30"
 	property string route1End          : "09:00"
+	property string route1Label        : ""
 	property string route1FromLat      : ""
 	property string route1FromLon      : ""
 	property string route1ToLat        : ""
@@ -37,6 +38,7 @@ App {
 	// Route 2
 	property string route2Start        : "16:00"
 	property string route2End          : "18:30"
+	property string route2Label        : ""
 	property string route2FromLat      : ""
 	property string route2FromLon      : ""
 	property string route2ToLat        : ""
@@ -65,12 +67,14 @@ App {
 			if (settings['showDayOnDate'])   showDayOnDate   = (settings['showDayOnDate']   == "true");
 			if (settings['route1Start'])     route1Start     = settings['route1Start'];
 			if (settings['route1End'])       route1End       = settings['route1End'];
+			if (settings['route1Label'])     route1Label     = settings['route1Label'];
 			if (settings['route1FromLat'])   route1FromLat   = settings['route1FromLat'];
 			if (settings['route1FromLon'])   route1FromLon   = settings['route1FromLon'];
 			if (settings['route1ToLat'])     route1ToLat     = settings['route1ToLat'];
 			if (settings['route1ToLon'])     route1ToLon     = settings['route1ToLon'];
 			if (settings['route2Start'])     route2Start     = settings['route2Start'];
 			if (settings['route2End'])       route2End       = settings['route2End'];
+			if (settings['route2Label'])     route2Label     = settings['route2Label'];
 			if (settings['route2FromLat'])   route2FromLat   = settings['route2FromLat'];
 			if (settings['route2FromLon'])   route2FromLon   = settings['route2FromLon'];
 			if (settings['route2ToLat'])          route2ToLat          = settings['route2ToLat'];
@@ -117,8 +121,9 @@ App {
 		return parseInt(parts[0]) * 60 + parseInt(parts[1]);
 	}
 
-	function fetchTravelTime(fromLat, fromLon, toLat, toLon) {
+	function fetchTravelTime(fromLat, fromLon, toLat, toLon, label) {
 		if (!fromLat || !fromLon || !toLat || !toLon) return;
+		var lbl = label || "";
 		var url = "https://www.waze.com/row-RoutingManager/routingRequest" +
 		          "?from=x%3A" + fromLon + "+y%3A" + fromLat +
 		          "&to=x%3A"   + toLon   + "+y%3A" + toLat   +
@@ -132,7 +137,7 @@ App {
 				var results = data.alternatives[0].response.results;
 				var secs    = 0;
 				for (var i = 0; i < results.length; i++) secs += results[i].crossTime;
-				travelTimeStr = Math.round(secs / 60) + " min";
+				travelTimeStr = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " min";
 			} catch(e) {
 				console.log("Waze fetch error: " + e);
 			}
@@ -157,8 +162,8 @@ App {
 
 		if (newRoute !== activeTravelRoute) {
 			activeTravelRoute = newRoute;
-			if      (newRoute === 1) fetchTravelTime(route1FromLat, route1FromLon, route1ToLat, route1ToLon);
-			else if (newRoute === 2) fetchTravelTime(route2FromLat, route2FromLon, route2ToLat, route2ToLon);
+			if      (newRoute === 1) fetchTravelTime(route1FromLat, route1FromLon, route1ToLat, route1ToLon, route1Label);
+			else if (newRoute === 2) fetchTravelTime(route2FromLat, route2FromLon, route2ToLat, route2ToLon, route2Label);
 			else                     travelTimeStr = "";
 		}
 	}
@@ -180,12 +185,14 @@ App {
 			"showDayOnDate"  : tmpshowDayOnDate,
 			"route1Start"    : route1Start,
 			"route1End"      : route1End,
+			"route1Label"    : route1Label,
 			"route1FromLat"  : route1FromLat,
 			"route1FromLon"  : route1FromLon,
 			"route1ToLat"    : route1ToLat,
 			"route1ToLon"    : route1ToLon,
 			"route2Start"    : route2Start,
 			"route2End"      : route2End,
+			"route2Label"    : route2Label,
 			"route2FromLat"  : route2FromLat,
 			"route2FromLon"  : route2FromLon,
 			"route2ToLat"         : route2ToLat,
@@ -214,8 +221,8 @@ App {
 		running: true
 		repeat: true
 		onTriggered: {
-			if      (activeTravelRoute === 1) fetchTravelTime(route1FromLat, route1FromLon, route1ToLat, route1ToLon);
-			else if (activeTravelRoute === 2) fetchTravelTime(route2FromLat, route2FromLon, route2ToLat, route2ToLon);
+			if      (activeTravelRoute === 1) fetchTravelTime(route1FromLat, route1FromLon, route1ToLat, route1ToLon, route1Label);
+			else if (activeTravelRoute === 2) fetchTravelTime(route2FromLat, route2FromLon, route2ToLat, route2ToLon, route2Label);
 		}
 	}
 }

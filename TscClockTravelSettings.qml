@@ -14,6 +14,8 @@ Screen {
 		r1FromLonInput.text    = app.route1FromLon;
 		r1ToLatInput.text      = app.route1ToLat;
 		r1ToLonInput.text      = app.route1ToLon;
+		r1LabelInput.text            = app.route1Label;
+		r1LabelInput.text             = app.route1Label;
 		r1WorkdaysToggle.isSwitchedOn = app.route1WorkdaysOnly;
 		r2StartInput.text      = app.route2Start;
 		r2EndInput.text        = app.route2End;
@@ -21,12 +23,14 @@ Screen {
 		r2FromLonInput.text    = app.route2FromLon;
 		r2ToLatInput.text      = app.route2ToLat;
 		r2ToLonInput.text      = app.route2ToLon;
+		r2LabelInput.text             = app.route2Label;
 		r2WorkdaysToggle.isSwitchedOn = app.route2WorkdaysOnly;
 	}
 
 	onCustomButtonClicked: {
 		app.route1Start         = r1StartInput.text;
 		app.route1End           = r1EndInput.text;
+		app.route1Label         = r1LabelInput.text;
 		app.route1FromLat       = r1FromLatInput.text;
 		app.route1FromLon       = r1FromLonInput.text;
 		app.route1ToLat         = r1ToLatInput.text;
@@ -34,6 +38,7 @@ Screen {
 		app.route1WorkdaysOnly  = r1WorkdaysToggle.isSwitchedOn;
 		app.route2Start         = r2StartInput.text;
 		app.route2End           = r2EndInput.text;
+		app.route2Label         = r2LabelInput.text;
 		app.route2FromLat       = r2FromLatInput.text;
 		app.route2FromLon       = r2FromLonInput.text;
 		app.route2ToLat         = r2ToLatInput.text;
@@ -101,8 +106,32 @@ Screen {
 	}
 
 	Text {
-		id: r1VanLabel
+		id: r1LabelText
 		anchors { top: r1PeriodeLabel.bottom; topMargin: isNxt ? 12 : 9; left: r1PeriodeLabel.left }
+		width: isNxt ? 100 : 80
+		height: isNxt ? 36 : 28
+		font.pixelSize: isNxt ? 18 : 14
+		font.family: qfont.regular.name
+		text: "Label:"
+		verticalAlignment: Text.AlignVCenter
+	}
+	Rectangle {
+		id: r1LabelBox
+		anchors { left: r1LabelText.right; leftMargin: isNxt ? 10 : 8; verticalCenter: r1LabelText.verticalCenter }
+		width: isNxt ? 250 : 200; height: isNxt ? 36 : 28
+		border.color: "#aaaaaa"; border.width: 1; radius: 2; color: "white"
+		TextInput {
+			id: r1LabelInput
+			anchors { fill: parent; margins: isNxt ? 6 : 4 }
+			font.pixelSize: isNxt ? 18 : 14
+			font.family: qfont.regular.name
+			color: "#333333"
+		}
+	}
+
+	Text {
+		id: r1VanLabel
+		anchors { top: r1LabelText.bottom; topMargin: isNxt ? 12 : 9; left: r1LabelText.left }
 		width: isNxt ? 100 : 80
 		height: isNxt ? 36 : 28
 		font.pixelSize: isNxt ? 18 : 14
@@ -247,8 +276,32 @@ Screen {
 	}
 
 	Text {
-		id: r2VanLabel
+		id: r2LabelText
 		anchors { top: r2PeriodeLabel.bottom; topMargin: isNxt ? 12 : 9; left: r2PeriodeLabel.left }
+		width: isNxt ? 100 : 80
+		height: isNxt ? 36 : 28
+		font.pixelSize: isNxt ? 18 : 14
+		font.family: qfont.regular.name
+		text: "Label:"
+		verticalAlignment: Text.AlignVCenter
+	}
+	Rectangle {
+		id: r2LabelBox
+		anchors { left: r2LabelText.right; leftMargin: isNxt ? 10 : 8; verticalCenter: r2LabelText.verticalCenter }
+		width: isNxt ? 250 : 200; height: isNxt ? 36 : 28
+		border.color: "#aaaaaa"; border.width: 1; radius: 2; color: "white"
+		TextInput {
+			id: r2LabelInput
+			anchors { fill: parent; margins: isNxt ? 6 : 4 }
+			font.pixelSize: isNxt ? 18 : 14
+			font.family: qfont.regular.name
+			color: "#333333"
+		}
+	}
+
+	Text {
+		id: r2VanLabel
+		anchors { top: r2LabelText.bottom; topMargin: isNxt ? 12 : 9; left: r2LabelText.left }
 		width: isNxt ? 100 : 80
 		height: isNxt ? 36 : 28
 		font.pixelSize: isNxt ? 18 : 14
