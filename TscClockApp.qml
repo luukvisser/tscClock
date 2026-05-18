@@ -23,6 +23,8 @@ App {
 	property bool showDate : true
 	property bool showMonthInText : true
 	property bool showDayOfWeek : true
+	property bool centerLayout : false
+	property bool showDayOnDate : false
 
 
 	FileIO {
@@ -40,6 +42,8 @@ App {
 			if (settings['showDate']) showDate = (settings['showDate'] == "true");
 			if (settings['showMonthInText']) showMonthInText = (settings['showMonthInText'] == "true");
 			if (settings['showDayOfWeek']) showDayOfWeek = (settings['showDayOfWeek'] == "true");
+			if (settings['centerLayout']) centerLayout = (settings['centerLayout'] == "true");
+			if (settings['showDayOnDate']) showDayOnDate = (settings['showDayOnDate'] == "true");
 		} catch(e) {
 		}
 
@@ -54,27 +58,21 @@ App {
 		var now = new Date().getTime();
 		timeSeconds = new Date().getSeconds();
 		if (timeSeconds.length == 1) timeSeconds = "0" + timeSeconds;
-		if (showDayOfWeek) {
-			timeStr = i18n.dateTime(now,i18n.dow_full).substring(0,2).toLowerCase() + " " + i18n.dateTime(now, i18n.time_yes);
-			if (isNxt) {
-				leftMarginTime = 8
-			} else {
-				leftMarginTime = 6
-			} 
+
+		if (showDayOfWeek && !showDayOnDate) {
+			timeStr = i18n.dateTime(now, i18n.dow_full).substring(0,2).toLowerCase() + " " + i18n.dateTime(now, i18n.time_yes);
+			leftMarginTime = isNxt ? 8 : 6;
 		} else {
-			timeStr = i18n.dateTime(now, i18n.time_yes)
-			if (isNxt) {
-				leftMarginTime = 60
-			} else {
-				leftMarginTime = 48
-			} 
+			timeStr = i18n.dateTime(now, i18n.time_yes);
+			leftMarginTime = isNxt ? 60 : 48;
 			if (showSeconds) leftMarginTime = leftMarginTime - 15;
 		}
 
-		if (showMonthInText) {
-			dateStr = i18n.dateTime(now, i18n.mon_full)
+		var dateBase = showMonthInText ? i18n.dateTime(now, i18n.mon_full) : i18n.dateTime(now, i18n.mon_num);
+		if (showDayOfWeek && showDayOnDate) {
+			dateStr = i18n.dateTime(now, i18n.dow_full).substring(0,2).toLowerCase() + " " + dateBase;
 		} else {
-			dateStr = i18n.dateTime(now, i18n.mon_num)
+			dateStr = dateBase;
 		}
 	}
 
@@ -106,12 +104,16 @@ App {
 		} else {
 			tmpshowDayOfWeek = "false"
 		}
+		var tmpCenterLayout = centerLayout ? "true" : "false";
+		var tmpshowDayOnDate = showDayOnDate ? "true" : "false";
 
  		var tscClockSettingsJson = {
 			"showSeconds" : tmpshowSeconds,
 			"showDate" : tmpshowDate,
 			"showMonthInText" : tmpshowMonthInText,
-			"showDayOfWeek" : tmpshowDayOfWeek
+			"showDayOfWeek" : tmpshowDayOfWeek,
+			"centerLayout" : tmpCenterLayout,
+			"showDayOnDate" : tmpshowDayOnDate
 		}
 
   		var doc3 = new XMLHttpRequest();

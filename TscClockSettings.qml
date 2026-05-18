@@ -14,6 +14,8 @@ Screen {
 		showSecondsToggle.isSwitchedOn = app.showSeconds;
 		showMonthInTextToggle.isSwitchedOn = app.showMonthInText;
 		showDayOfWeekToggle.isSwitchedOn = app.showDayOfWeek;
+		centerLayoutToggle.isSwitchedOn = app.centerLayout;
+		showDayOnDateToggle.isSwitchedOn = app.showDayOnDate;
 	}
 
 	onCustomButtonClicked: {
@@ -128,6 +130,54 @@ Screen {
 			} else {
 				app.showDayOfWeek = false;
 			}
+		}
+	}
+
+	Text {
+		id: centerLayoutText
+		anchors {
+			top: showDayOfWeekText.bottom
+			topMargin: isNxt ? 25 : 20
+			left: showDayOfWeekText.left
+		}
+		font.pixelSize: isNxt ? 20 : 16
+		font.family: qfont.semiBold.name
+		text: "Gecentreerde weergave"
+	}
+
+	OnOffToggle {
+		id: centerLayoutToggle
+		height: isNxt ? 45 : 36
+		anchors.left: showDayOfWeekToggle.left
+		anchors.top: centerLayoutText.top
+		leftIsSwitchedOn: false
+		onSelectedChangedByUser: {
+			app.centerLayout = isSwitchedOn;
+		}
+	}
+
+	Text {
+		id: showDayOnDateText
+		anchors {
+			top: centerLayoutText.bottom
+			topMargin: isNxt ? 25 : 20
+			left: centerLayoutText.left
+		}
+		font.pixelSize: isNxt ? 20 : 16
+		font.family: qfont.semiBold.name
+		text: "Dag voor datum (i.p.v. tijd)"
+		visible: app.showDayOfWeek
+	}
+
+	OnOffToggle {
+		id: showDayOnDateToggle
+		height: isNxt ? 45 : 36
+		anchors.left: centerLayoutToggle.left
+		anchors.top: showDayOnDateText.top
+		leftIsSwitchedOn: false
+		visible: app.showDayOfWeek
+		onSelectedChangedByUser: {
+			app.showDayOnDate = isSwitchedOn;
 		}
 	}
 }
