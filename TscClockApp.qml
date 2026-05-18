@@ -122,24 +122,38 @@ App {
 	}
 
 	function fetchTravelTime(fromLat, fromLon, toLat, toLon, label) {
-		if (!fromLat || !fromLon || !toLat || !toLon) return;
+		if (!fromLat || !fromLon || !toLat || !toLon) {
+			console.log("Waze: skipping fetch, missing coordinates");
+			return;
+		}
+		// Accept Dutch decimal commas and stray whitespace
+		fromLat = String(fromLat).trim().replace(",", ".");
+		fromLon = String(fromLon).trim().replace(",", ".");
+		toLat   = String(toLat).trim().replace(",", ".");
+		toLon   = String(toLon).trim().replace(",", ".");
 		var lbl = label || "";
 		var url = "https://www.waze.com/row-RoutingManager/routingRequest" +
 		          "?from=x%3A" + fromLon + "+y%3A" + fromLat +
 		          "&to=x%3A"   + toLon   + "+y%3A" + toLat   +
 		          "&at=0&returnJSON=true&returnGeometries=false" +
 		          "&returnInstructions=false&timeout=60000&nPaths=1";
+		console.log("Waze: GET " + url);
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
-			if (xhr.readyState !== XMLHttpRequest.DONE || xhr.status !== 200) return;
+			if (xhr.readyState !== XMLHttpRequest.DONE) return;
+			if (xhr.status !== 200) {
+				console.log("Waze: HTTP " + xhr.status + " — " + (xhr.responseText || "").substring(0, 200));
+				return;
+			}
 			try {
 				var data    = JSON.parse(xhr.responseText);
 				var results = data.alternatives[0].response.results;
 				var secs    = 0;
 				for (var i = 0; i < results.length; i++) secs += results[i].crossTime;
 				travelTimeStr = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " min";
+				console.log("Waze: ok — " + travelTimeStr);
 			} catch(e) {
-				console.log("Waze fetch error: " + e);
+				console.log("Waze: parse error — " + e + " — body: " + (xhr.responseText || "").substring(0, 200));
 			}
 		};
 		xhr.open("GET", url);
