@@ -26,20 +26,22 @@ App {
 	property bool   showDayOnDate  : false
 
 	// Route 1
-	property string route1Start   : "06:30"
-	property string route1End     : "09:00"
-	property string route1FromLat : ""
-	property string route1FromLon : ""
-	property string route1ToLat   : ""
-	property string route1ToLon   : ""
+	property string route1Start        : "06:30"
+	property string route1End          : "09:00"
+	property string route1FromLat      : ""
+	property string route1FromLon      : ""
+	property string route1ToLat        : ""
+	property string route1ToLon        : ""
+	property bool   route1WorkdaysOnly : false
 
 	// Route 2
-	property string route2Start   : "16:00"
-	property string route2End     : "18:30"
-	property string route2FromLat : ""
-	property string route2FromLon : ""
-	property string route2ToLat   : ""
-	property string route2ToLon   : ""
+	property string route2Start        : "16:00"
+	property string route2End          : "18:30"
+	property string route2FromLat      : ""
+	property string route2FromLon      : ""
+	property string route2ToLat        : ""
+	property string route2ToLon        : ""
+	property bool   route2WorkdaysOnly : false
 
 	// Runtime — not persisted
 	property string travelTimeStr    : ""
@@ -71,8 +73,10 @@ App {
 			if (settings['route2End'])       route2End       = settings['route2End'];
 			if (settings['route2FromLat'])   route2FromLat   = settings['route2FromLat'];
 			if (settings['route2FromLon'])   route2FromLon   = settings['route2FromLon'];
-			if (settings['route2ToLat'])     route2ToLat     = settings['route2ToLat'];
-			if (settings['route2ToLon'])     route2ToLon     = settings['route2ToLon'];
+			if (settings['route2ToLat'])          route2ToLat          = settings['route2ToLat'];
+			if (settings['route2ToLon'])          route2ToLon          = settings['route2ToLon'];
+			if (settings['route1WorkdaysOnly'])   route1WorkdaysOnly   = (settings['route1WorkdaysOnly'] == "true");
+			if (settings['route2WorkdaysOnly'])   route2WorkdaysOnly   = (settings['route2WorkdaysOnly'] == "true");
 		} catch(e) {
 		}
 	}
@@ -140,13 +144,15 @@ App {
 	function checkTravelTimeWindow() {
 		var now     = new Date();
 		var current = now.getHours() * 60 + now.getMinutes();
+		var dow     = now.getDay();   // 0=Sunday … 6=Saturday
+		var isWorkday = dow >= 1 && dow <= 5;
 		var r1s = minutesOfDay(route1Start), r1e = minutesOfDay(route1End);
 		var r2s = minutesOfDay(route2Start), r2e = minutesOfDay(route2End);
 
 		var newRoute = 0;
-		if (r1s >= 0 && r1e > r1s && current >= r1s && current < r1e)
+		if (r1s >= 0 && r1e > r1s && current >= r1s && current < r1e && (!route1WorkdaysOnly || isWorkday))
 			newRoute = 1;
-		else if (r2s >= 0 && r2e > r2s && current >= r2s && current < r2e)
+		else if (r2s >= 0 && r2e > r2s && current >= r2s && current < r2e && (!route2WorkdaysOnly || isWorkday))
 			newRoute = 2;
 
 		if (newRoute !== activeTravelRoute) {
@@ -182,8 +188,10 @@ App {
 			"route2End"      : route2End,
 			"route2FromLat"  : route2FromLat,
 			"route2FromLon"  : route2FromLon,
-			"route2ToLat"    : route2ToLat,
-			"route2ToLon"    : route2ToLon
+			"route2ToLat"         : route2ToLat,
+			"route2ToLon"         : route2ToLon,
+			"route1WorkdaysOnly"  : route1WorkdaysOnly ? "true" : "false",
+			"route2WorkdaysOnly"  : route2WorkdaysOnly ? "true" : "false"
 		}
 
 		var doc3 = new XMLHttpRequest();

@@ -8,33 +8,37 @@ Screen {
 
 	onShown: {
 		addCustomTopRightButton("Opslaan");
-		r1StartInput.text   = app.route1Start;
-		r1EndInput.text     = app.route1End;
-		r1FromLatInput.text = app.route1FromLat;
-		r1FromLonInput.text = app.route1FromLon;
-		r1ToLatInput.text   = app.route1ToLat;
-		r1ToLonInput.text   = app.route1ToLon;
-		r2StartInput.text   = app.route2Start;
-		r2EndInput.text     = app.route2End;
-		r2FromLatInput.text = app.route2FromLat;
-		r2FromLonInput.text = app.route2FromLon;
-		r2ToLatInput.text   = app.route2ToLat;
-		r2ToLonInput.text   = app.route2ToLon;
+		r1StartInput.text      = app.route1Start;
+		r1EndInput.text        = app.route1End;
+		r1FromLatInput.text    = app.route1FromLat;
+		r1FromLonInput.text    = app.route1FromLon;
+		r1ToLatInput.text      = app.route1ToLat;
+		r1ToLonInput.text      = app.route1ToLon;
+		r1WorkdaysToggle.isSwitchedOn = app.route1WorkdaysOnly;
+		r2StartInput.text      = app.route2Start;
+		r2EndInput.text        = app.route2End;
+		r2FromLatInput.text    = app.route2FromLat;
+		r2FromLonInput.text    = app.route2FromLon;
+		r2ToLatInput.text      = app.route2ToLat;
+		r2ToLonInput.text      = app.route2ToLon;
+		r2WorkdaysToggle.isSwitchedOn = app.route2WorkdaysOnly;
 	}
 
 	onCustomButtonClicked: {
-		app.route1Start   = r1StartInput.text;
-		app.route1End     = r1EndInput.text;
-		app.route1FromLat = r1FromLatInput.text;
-		app.route1FromLon = r1FromLonInput.text;
-		app.route1ToLat   = r1ToLatInput.text;
-		app.route1ToLon   = r1ToLonInput.text;
-		app.route2Start   = r2StartInput.text;
-		app.route2End     = r2EndInput.text;
-		app.route2FromLat = r2FromLatInput.text;
-		app.route2FromLon = r2FromLonInput.text;
-		app.route2ToLat   = r2ToLatInput.text;
-		app.route2ToLon   = r2ToLonInput.text;
+		app.route1Start         = r1StartInput.text;
+		app.route1End           = r1EndInput.text;
+		app.route1FromLat       = r1FromLatInput.text;
+		app.route1FromLon       = r1FromLonInput.text;
+		app.route1ToLat         = r1ToLatInput.text;
+		app.route1ToLon         = r1ToLonInput.text;
+		app.route1WorkdaysOnly  = r1WorkdaysToggle.isSwitchedOn;
+		app.route2Start         = r2StartInput.text;
+		app.route2End           = r2EndInput.text;
+		app.route2FromLat       = r2FromLatInput.text;
+		app.route2FromLon       = r2FromLonInput.text;
+		app.route2ToLat         = r2ToLatInput.text;
+		app.route2ToLon         = r2ToLonInput.text;
+		app.route2WorkdaysOnly  = r2WorkdaysToggle.isSwitchedOn;
 		app.saveSettings();
 		hide();
 	}
@@ -170,11 +174,27 @@ Screen {
 		}
 	}
 
+	Text {
+		id: r1WorkdaysLabel
+		anchors { top: r1NaarLabel.bottom; topMargin: isNxt ? 12 : 9; left: r1NaarLabel.left }
+		height: isNxt ? 36 : 28
+		font.pixelSize: isNxt ? 18 : 14
+		font.family: qfont.regular.name
+		text: "Alleen op werkdagen"
+		verticalAlignment: Text.AlignVCenter
+	}
+	OnOffToggle {
+		id: r1WorkdaysToggle
+		height: isNxt ? 36 : 28
+		anchors { left: r1WorkdaysLabel.right; leftMargin: isNxt ? 15 : 12; verticalCenter: r1WorkdaysLabel.verticalCenter }
+		leftIsSwitchedOn: false
+	}
+
 	// ── Route 2 ──────────────────────────────────────────────────────────────
 
 	Text {
 		id: route2Header
-		anchors { top: r1NaarLabel.bottom; topMargin: isNxt ? 28 : 20; left: route1Header.left }
+		anchors { top: r1WorkdaysLabel.bottom; topMargin: isNxt ? 22 : 16; left: route1Header.left }
 		font.pixelSize: isNxt ? 22 : 18
 		font.family: qfont.semiBold.name
 		text: "Route 2"
@@ -300,10 +320,26 @@ Screen {
 		}
 	}
 
+	Text {
+		id: r2WorkdaysLabel
+		anchors { top: r2NaarLabel.bottom; topMargin: isNxt ? 12 : 9; left: r2NaarLabel.left }
+		height: isNxt ? 36 : 28
+		font.pixelSize: isNxt ? 18 : 14
+		font.family: qfont.regular.name
+		text: "Alleen op werkdagen"
+		verticalAlignment: Text.AlignVCenter
+	}
+	OnOffToggle {
+		id: r2WorkdaysToggle
+		height: isNxt ? 36 : 28
+		anchors { left: r2WorkdaysLabel.right; leftMargin: isNxt ? 15 : 12; verticalCenter: r2WorkdaysLabel.verticalCenter }
+		leftIsSwitchedOn: false
+	}
+
 	// ── Hint ─────────────────────────────────────────────────────────────────
 
 	Text {
-		anchors { top: r2NaarLabel.bottom; topMargin: isNxt ? 18 : 14; left: r2NaarLabel.left }
+		anchors { top: r2WorkdaysLabel.bottom; topMargin: isNxt ? 14 : 10; left: r2WorkdaysLabel.left }
 		font.pixelSize: isNxt ? 15 : 12
 		font.family: qfont.regular.name
 		color: "#888888"
