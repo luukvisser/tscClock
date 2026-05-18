@@ -38,6 +38,17 @@ Tile {
 			visible: app.showDate
 			height: app.showDate ? implicitHeight : 0
 		}
+
+		Text {
+			id: txtTravelTimeCentered
+			text: app.travelTimeStr
+			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+			anchors.horizontalCenter: parent.horizontalCenter
+			font.pixelSize: isNxt ? 22 : 18
+			font.family: qfont.regular.name
+			visible: app.travelTimeStr !== ""
+			height: app.travelTimeStr !== "" ? implicitHeight : 0
+		}
 	}
 
 	Text {
@@ -99,5 +110,20 @@ Tile {
 		font.pixelSize: isNxt ? 32 : 25
 		font.family: qfont.regular.name
 		visible: app.showDate && !app.centerLayout
+	}
+
+	Text {
+		id: txtTravelTime
+		text: app.travelTimeStr
+		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor: colors.clockTileColor
+		anchors {
+			baseline: parent.top
+			baselineOffset: isNxt ? 158 : 125
+			horizontalCenter: parent.horizontalCenter
+		}
+		horizontalAlignment: Text.AlignHCenter
+		font.pixelSize: isNxt ? 22 : 18
+		font.family: qfont.regular.name
+		visible: app.travelTimeStr !== "" && !app.centerLayout
 	}
 }

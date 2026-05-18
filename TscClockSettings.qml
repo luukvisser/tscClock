@@ -180,4 +180,21 @@ Screen {
 			app.showDayOnDate = isSwitchedOn;
 		}
 	}
+
+	Text {
+		id: travelSettingsNavText
+		anchors {
+			top: showDayOnDateText.bottom
+			topMargin: isNxt ? 30 : 22
+			left: showDayOnDateText.left
+		}
+		font.pixelSize: isNxt ? 20 : 16
+		font.family: qfont.semiBold.name
+		text: "Reistijd instellen »"
+
+		MouseArea {
+			anchors.fill: parent
+			onClicked: app.tscClockTravelSettings.show()
+		}
+	}
 }
