@@ -17,14 +17,34 @@ Tile {
 		spacing: isNxt ? 8 : 6
 		visible: app.centerLayout
 
-		Text {
-			id: txtTimeBigCentered
-			text: app.timeStr
-			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-			anchors.left: parent.left
-			anchors.leftMargin: app.leftMarginTime
-			font.pixelSize: isNxt ? 65 : 50
-			font.family: qfont.regular.name
+		Item {
+			width: parent.width
+			height: txtTimeBigCentered.implicitHeight
+
+			Text {
+				id: txtTimeBigCentered
+				text: app.timeStr
+				color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+				anchors.left: parent.left
+				anchors.leftMargin: app.leftMarginTime
+				font.pixelSize: isNxt ? 65 : 50
+				font.family: qfont.regular.name
+			}
+
+			Text {
+				id: txtSecondsCentered
+				text: app.timeSeconds
+				color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+				anchors {
+					bottom: txtTimeBigCentered.bottom
+					bottomMargin: isNxt ? 11 : 9
+					left: txtTimeBigCentered.right
+					leftMargin: isNxt ? 5 : 4
+				}
+				font.pixelSize: isNxt ? 30 : 24
+				font.family: qfont.regular.name
+				visible: app.showSeconds
+			}
 		}
 
 		Text {
@@ -49,21 +69,6 @@ Tile {
 			visible: app.travelTimeStr !== ""
 			height: app.travelTimeStr !== "" ? implicitHeight : 0
 		}
-	}
-
-	Text {
-		id: txtSecondsCentered
-		text: app.timeSeconds
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-		anchors {
-			bottom: txtTimeBigCentered.bottom
-			bottomMargin: isNxt ? 11 : 9
-			left: txtTimeBigCentered.right
-			leftMargin: isNxt ? 5 : 4
-		}
-		font.pixelSize: isNxt ? 30 : 24
-		font.family: qfont.regular.name
-		visible: app.showSeconds && app.centerLayout
 	}
 
 	// --- ORIGINAL LAYOUT ---
