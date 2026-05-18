@@ -44,7 +44,7 @@ Tile {
 			text: app.travelTimeStr
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 			anchors.horizontalCenter: parent.horizontalCenter
-			font.pixelSize: isNxt ? 22 : 18
+			font.pixelSize: isNxt ? 20 : 16
 			font.family: qfont.regular.name
 			visible: app.travelTimeStr !== ""
 			height: app.travelTimeStr !== "" ? implicitHeight : 0
@@ -122,7 +122,7 @@ Tile {
 			horizontalCenter: parent.horizontalCenter
 		}
 		horizontalAlignment: Text.AlignHCenter
-		font.pixelSize: isNxt ? 22 : 18
+		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.regular.name
 		visible: app.travelTimeStr !== "" && !app.centerLayout
 	}
