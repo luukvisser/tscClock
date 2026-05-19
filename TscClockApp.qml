@@ -168,10 +168,11 @@ App {
 		var r1s = minutesOfDay(route1Start), r1e = minutesOfDay(route1End);
 		var r2s = minutesOfDay(route2Start), r2e = minutesOfDay(route2End);
 
+		// TEMP: always show travel time regardless of time window
 		var newRoute = 0;
-		if (r1s >= 0 && r1e > r1s && current >= r1s && current < r1e && (!route1WorkdaysOnly || isWorkday))
+		if (r1s >= 0 && r1e > r1s && (!route1WorkdaysOnly || isWorkday))
 			newRoute = 1;
-		else if (r2s >= 0 && r2e > r2s && current >= r2s && current < r2e && (!route2WorkdaysOnly || isWorkday))
+		else if (r2s >= 0 && r2e > r2s && (!route2WorkdaysOnly || isWorkday))
 			newRoute = 2;
 
 		if (newRoute !== activeTravelRoute) {
