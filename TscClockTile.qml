@@ -25,8 +25,8 @@ Tile {
 				id: txtTimeBigCentered
 				text: app.timeStr
 				color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
-				anchors.left: parent.left
-				anchors.leftMargin: app.leftMarginTime
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.horizontalCenterOffset: app.showSeconds ? -Math.round((txtSecondsCentered.implicitWidth + (isNxt ? 5 : 4)) / 2) : 0
 				font.pixelSize: isNxt ? 65 : 50
 				font.family: qfont.regular.name
 			}
