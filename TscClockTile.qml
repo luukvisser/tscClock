@@ -27,7 +27,7 @@ Tile {
 				color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 				anchors.horizontalCenter: parent.horizontalCenter
 				anchors.horizontalCenterOffset: app.showSeconds ? -Math.round((txtSecondsCentered.implicitWidth + (isNxt ? 5 : 4)) / 2) : 0
-				font.pixelSize: isNxt ? 65 : 50
+				font.pixelSize: app.showDayOnDate ? (isNxt ? 75 : 58) : (isNxt ? 65 : 50)
 				font.family: qfont.regular.name
 			}
 
@@ -82,7 +82,7 @@ Tile {
 			left: parent.left
 			leftMargin: app.leftMarginTime
 		}
-		font.pixelSize: isNxt ? 65 : 50
+		font.pixelSize: app.showDayOnDate ? (isNxt ? 75 : 58) : (isNxt ? 65 : 50)
 		font.family: qfont.regular.name
 		visible: !app.centerLayout
 	}
