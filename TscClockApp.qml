@@ -28,26 +28,30 @@ App {
 	// Route 1
 	property string route1Start        : "06:30"
 	property string route1End          : "09:00"
-	property string route1Label        : ""
+	property string route1Label        : "Thuis-Werk:"
 	property string route1FromLat      : ""
 	property string route1FromLon      : ""
 	property string route1ToLat        : ""
 	property string route1ToLon        : ""
 	property bool   route1WorkdaysOnly : false
+	property bool   route1WindowEnabled : false   // false = ignore time window, always active
 
 	// Route 2
 	property string route2Start        : "16:00"
 	property string route2End          : "18:30"
-	property string route2Label        : ""
+	property string route2Label        : "Werk-Thuis:"
 	property string route2FromLat      : ""
 	property string route2FromLon      : ""
 	property string route2ToLat        : ""
 	property string route2ToLon        : ""
 	property bool   route2WorkdaysOnly : false
+	property bool   route2WindowEnabled : false   // false = ignore time window, always active
 
 	// Runtime — not persisted
-	property string travelTimeStr    : ""
-	property int    activeTravelRoute : 0   // 0=none, 1=route1, 2=route2
+	property string travelTime1Str   : ""
+	property string travelTime2Str   : ""
+	property bool   route1Active     : false
+	property bool   route2Active     : false
 
 
 	FileIO {
@@ -81,6 +85,8 @@ App {
 			if (settings['route2ToLon'])          route2ToLon          = settings['route2ToLon'];
 			if (settings['route1WorkdaysOnly'])   route1WorkdaysOnly   = (settings['route1WorkdaysOnly'] == "true");
 			if (settings['route2WorkdaysOnly'])   route2WorkdaysOnly   = (settings['route2WorkdaysOnly'] == "true");
+			if (settings['route1WindowEnabled'])  route1WindowEnabled  = (settings['route1WindowEnabled'] == "true");
+			if (settings['route2WindowEnabled'])  route2WindowEnabled  = (settings['route2WindowEnabled'] == "true");
 		} catch(e) {
 		}
 	}
@@ -121,7 +127,12 @@ App {
 		return parseInt(parts[0]) * 60 + parseInt(parts[1]);
 	}
 
-	function fetchTravelTime(fromLat, fromLon, toLat, toLon, label) {
+	function setTravelTime(slot, str) {
+		if (slot === 1) travelTime1Str = str;
+		else            travelTime2Str = str;
+	}
+
+	function fetchTravelTime(slot, fromLat, fromLon, toLat, toLon, label) {
 		if (!fromLat || !fromLon || !toLat || !toLon) {
 			console.log("Waze: skipping fetch, missing coordinates");
 			return;
@@ -132,7 +143,7 @@ App {
 		toLat   = String(toLat).trim().replace(",", ".");
 		toLon   = String(toLon).trim().replace(",", ".");
 		var lbl = label || "";
-		var url = "https://www.waze.com/row-RoutingManager/routingRequest" +
+		var url = "https://routing-livemap-row.waze.com/RoutingManager/routingRequest" +
 		          "?from=x%3A" + fromLon + "+y%3A" + fromLat +
 		          "&to=x%3A"   + toLon   + "+y%3A" + toLat   +
 		          "&at=0&returnJSON=true&returnGeometries=false" +
@@ -141,23 +152,39 @@ App {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState !== XMLHttpRequest.DONE) return;
+			// Break the xhr <-> handler reference cycle so the request object
+			// (and its closure) can be garbage-collected instead of leaking.
+			xhr.onreadystatechange = null;
 			if (xhr.status !== 200) {
 				console.log("Waze: HTTP " + xhr.status + " — " + (xhr.responseText || "").substring(0, 200));
 				return;
 			}
 			try {
 				var data    = JSON.parse(xhr.responseText);
-				var results = data.alternatives[0].response.results;
+				// nPaths=1 returns data.response.results; multi-path returns data.alternatives[].
+				var results = data.alternatives
+				              ? data.alternatives[0].response.results
+				              : data.response.results;
 				var secs    = 0;
 				for (var i = 0; i < results.length; i++) secs += results[i].crossTime;
-				travelTimeStr = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " min";
-				console.log("Waze: ok — " + travelTimeStr);
+				var str = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " min";
+				setTravelTime(slot, str);
+				console.log("Waze: ok — " + str);
 			} catch(e) {
 				console.log("Waze: parse error — " + e + " — body: " + (xhr.responseText || "").substring(0, 200));
 			}
 		};
 		xhr.open("GET", url);
 		xhr.send();
+	}
+
+	// Whether a route should currently be shown. When its time window is
+	// disabled the route is always active (still subject to workdays-only);
+	// otherwise the current time must fall inside [start, end).
+	function routeIsActive(rs, re, windowEnabled, workdaysOnly, current, isWorkday) {
+		if (workdaysOnly && !isWorkday) return false;
+		if (!windowEnabled)            return true;
+		return rs >= 0 && re > rs && current >= rs && current < re;
 	}
 
 	function checkTravelTimeWindow() {
@@ -168,18 +195,30 @@ App {
 		var r1s = minutesOfDay(route1Start), r1e = minutesOfDay(route1End);
 		var r2s = minutesOfDay(route2Start), r2e = minutesOfDay(route2End);
 
-		// TEMP: always show travel time regardless of time window
-		var newRoute = 0;
-		if (r1s >= 0 && r1e > r1s && (!route1WorkdaysOnly || isWorkday))
-			newRoute = 1;
-		else if (r2s >= 0 && r2e > r2s && (!route2WorkdaysOnly || isWorkday))
-			newRoute = 2;
+		// Each route is evaluated independently so overlapping windows show both.
+		var a1 = routeIsActive(r1s, r1e, route1WindowEnabled, route1WorkdaysOnly, current, isWorkday);
+		var a2 = routeIsActive(r2s, r2e, route2WindowEnabled, route2WorkdaysOnly, current, isWorkday);
 
-		if (newRoute !== activeTravelRoute) {
-			activeTravelRoute = newRoute;
-			if      (newRoute === 1) fetchTravelTime(route1FromLat, route1FromLon, route1ToLat, route1ToLon, route1Label);
-			else if (newRoute === 2) fetchTravelTime(route2FromLat, route2FromLon, route2ToLat, route2ToLon, route2Label);
-			else                     travelTimeStr = "";
+		// Fetch only on the transition into the active state (so we don't refetch
+		// every tick), but always clear when inactive so a stale value can never
+		// linger — e.g. after a settings change flips a route to inactive.
+		if (a1) {
+			if (!route1Active) {
+				route1Active = true;
+				fetchTravelTime(1, route1FromLat, route1FromLon, route1ToLat, route1ToLon, route1Label);
+			}
+		} else {
+			route1Active   = false;
+			travelTime1Str = "";
+		}
+		if (a2) {
+			if (!route2Active) {
+				route2Active = true;
+				fetchTravelTime(2, route2FromLat, route2FromLon, route2ToLat, route2ToLon, route2Label);
+			}
+		} else {
+			route2Active   = false;
+			travelTime2Str = "";
 		}
 	}
 
@@ -213,7 +252,9 @@ App {
 			"route2ToLat"         : route2ToLat,
 			"route2ToLon"         : route2ToLon,
 			"route1WorkdaysOnly"  : route1WorkdaysOnly ? "true" : "false",
-			"route2WorkdaysOnly"  : route2WorkdaysOnly ? "true" : "false"
+			"route2WorkdaysOnly"  : route2WorkdaysOnly ? "true" : "false",
+			"route1WindowEnabled" : route1WindowEnabled ? "true" : "false",
+			"route2WindowEnabled" : route2WindowEnabled ? "true" : "false"
 		}
 
 		var doc3 = new XMLHttpRequest();
@@ -236,8 +277,8 @@ App {
 		running: true
 		repeat: true
 		onTriggered: {
-			if      (activeTravelRoute === 1) fetchTravelTime(route1FromLat, route1FromLon, route1ToLat, route1ToLon, route1Label);
-			else if (activeTravelRoute === 2) fetchTravelTime(route2FromLat, route2FromLon, route2ToLat, route2ToLon, route2Label);
+			if (route1Active) fetchTravelTime(1, route1FromLat, route1FromLon, route1ToLat, route1ToLon, route1Label);
+			if (route2Active) fetchTravelTime(2, route2FromLat, route2FromLon, route2ToLat, route2ToLon, route2Label);
 		}
 	}
 }

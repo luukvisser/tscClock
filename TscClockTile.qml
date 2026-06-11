@@ -60,14 +60,25 @@ Tile {
 		}
 
 		Text {
-			id: txtTravelTimeCentered
-			text: app.travelTimeStr
+			id: txtTravel1Centered
+			text: app.travelTime1Str
 			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 			anchors.horizontalCenter: parent.horizontalCenter
 			font.pixelSize: isNxt ? 20 : 16
 			font.family: qfont.regular.name
-			visible: app.travelTimeStr !== ""
-			height: app.travelTimeStr !== "" ? implicitHeight : 0
+			visible: app.travelTime1Str !== ""
+			height: app.travelTime1Str !== "" ? implicitHeight : 0
+		}
+
+		Text {
+			id: txtTravel2Centered
+			text: app.travelTime2Str
+			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
+			anchors.horizontalCenter: parent.horizontalCenter
+			font.pixelSize: isNxt ? 20 : 16
+			font.family: qfont.regular.name
+			visible: app.travelTime2Str !== ""
+			height: app.travelTime2Str !== "" ? implicitHeight : 0
 		}
 	}
 
@@ -117,18 +128,39 @@ Tile {
 		visible: app.showDate && !app.centerLayout
 	}
 
-	Text {
-		id: txtTravelTime
-		text: app.travelTimeStr
-		color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor: colors.clockTileColor
+	Column {
+		id: travelColumn
 		anchors {
-			baseline: parent.top
-			baselineOffset: isNxt ? 158 : 125
+			// Approximate the old single-line baseline (158/125) as a top offset;
+			// the first line's ascent (~16/13 px) puts its baseline at that spot.
+			top: parent.top
+			topMargin: isNxt ? 142 : 112
 			horizontalCenter: parent.horizontalCenter
 		}
-		horizontalAlignment: Text.AlignHCenter
-		font.pixelSize: isNxt ? 20 : 16
-		font.family: qfont.regular.name
-		visible: app.travelTimeStr !== "" && !app.centerLayout
+		visible: !app.centerLayout
+
+		Text {
+			id: txtTravelTime1
+			text: app.travelTime1Str
+			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor: colors.clockTileColor
+			anchors.horizontalCenter: parent.horizontalCenter
+			horizontalAlignment: Text.AlignHCenter
+			font.pixelSize: isNxt ? 20 : 16
+			font.family: qfont.regular.name
+			visible: app.travelTime1Str !== ""
+			height: app.travelTime1Str !== "" ? implicitHeight : 0
+		}
+
+		Text {
+			id: txtTravelTime2
+			text: app.travelTime2Str
+			color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor: colors.clockTileColor
+			anchors.horizontalCenter: parent.horizontalCenter
+			horizontalAlignment: Text.AlignHCenter
+			font.pixelSize: isNxt ? 20 : 16
+			font.family: qfont.regular.name
+			visible: app.travelTime2Str !== ""
+			height: app.travelTime2Str !== "" ? implicitHeight : 0
+		}
 	}
 }

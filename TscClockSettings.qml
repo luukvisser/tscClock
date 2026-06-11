@@ -89,6 +89,7 @@ Screen {
 		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.semiBold.name
 		text: "Maand in datum voluit geschreven"
+		opacity: app.showDate ? 1.0 : 0.35
 	}
 
 	OnOffToggle {
@@ -97,6 +98,8 @@ Screen {
 		anchors.left: showSecondsToggle.left
 		anchors.top: showMonthInTextText.top
 		leftIsSwitchedOn: false
+		enabled: app.showDate
+		opacity: app.showDate ? 1.0 : 0.35
 		onSelectedChangedByUser: {
 			if (isSwitchedOn) {
 				app.showMonthInText = true;
@@ -142,7 +145,7 @@ Screen {
 		}
 		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.semiBold.name
-		text: "Gecentreerde weergave"
+		text: "Verticaal gecentreerde weergave"
 	}
 
 	OnOffToggle {
@@ -165,8 +168,9 @@ Screen {
 		}
 		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.semiBold.name
-		text: "Dag voor datum (i.p.v. tijd)"
+		text: "Dag voor datum (i.p.v. voor tijd)"
 		visible: app.showDayOfWeek
+		opacity: app.showDate ? 1.0 : 0.35
 	}
 
 	OnOffToggle {
@@ -176,6 +180,8 @@ Screen {
 		anchors.top: showDayOnDateText.top
 		leftIsSwitchedOn: false
 		visible: app.showDayOfWeek
+		enabled: app.showDate
+		opacity: app.showDate ? 1.0 : 0.35
 		onSelectedChangedByUser: {
 			app.showDayOnDate = isSwitchedOn;
 		}
@@ -190,7 +196,7 @@ Screen {
 		}
 		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.semiBold.name
-		text: "Reistijd instellen »"
+		text: "Waze reistijd »"
 
 		MouseArea {
 			anchors.fill: parent
