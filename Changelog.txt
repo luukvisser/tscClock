@@ -1,3 +1,7 @@
+1.1.1
+- Abort Waze requests that stall, and show a dash instead of a stale travel time
+- Mark user-visible strings with qsTr and add an English translation
+
 1.1.0
 - Add new option for center layout
 - Add option to move the day text to the date row

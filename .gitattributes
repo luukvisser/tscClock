@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# Compiled Qt translation catalogs
+*.qm binary
