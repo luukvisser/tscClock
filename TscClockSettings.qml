@@ -5,10 +5,10 @@ import BxtClient 1.0
 Screen {
     id: tscClockSettingsScreen
 
-    screenTitle: "TSC Klok configuratie"
+    screenTitle: qsTr("TSC Klok configuratie")
 
     onShown: {
-        addCustomTopRightButton("Opslaan");
+        addCustomTopRightButton(qsTr("Opslaan"));
         showDateToggle.isSwitchedOn = app.showDate;
         showSecondsToggle.isSwitchedOn = app.showSeconds;
         showMonthInTextToggle.isSwitchedOn = app.showMonthInText;
@@ -30,7 +30,7 @@ Screen {
         width: isNxt ? 500 : 400
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Toon datum"
+        text: qsTr("Toon datum")
     }
 
     OnOffToggle {
@@ -58,7 +58,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Toon seconden in de tijd"
+        text: qsTr("Toon seconden in de tijd")
     }
 
     OnOffToggle {
@@ -85,7 +85,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Maand in datum voluit geschreven"
+        text: qsTr("Maand in datum voluit geschreven")
         opacity: app.showDate ? 1.0 : 0.35
     }
 
@@ -115,7 +115,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Toon dag van de week"
+        text: qsTr("Toon dag van de week")
     }
 
     OnOffToggle {
@@ -142,7 +142,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Verticaal gecentreerde weergave"
+        text: qsTr("Verticaal gecentreerde weergave")
     }
 
     OnOffToggle {
@@ -165,7 +165,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Dag voor datum (i.p.v. voor tijd)"
+        text: qsTr("Dag voor datum (i.p.v. voor tijd)")
         visible: app.showDayOfWeek
         opacity: app.showDate ? 1.0 : 0.35
     }
@@ -193,7 +193,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: "Waze reistijd »"
+        text: qsTr("Waze reistijd »")
 
         MouseArea {
             anchors.fill: parent

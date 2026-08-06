@@ -102,8 +102,14 @@ duration can never linger on the tile. A second timer refreshes the active route
 
 Travel times come from Waze's public live-map routing endpoint
 (`routing-livemap-row.waze.com/RoutingManager/routingRequest`), summing `crossTime` over
-the returned route segments. Failures are logged to the Toon's console and leave the
-previous value in place.
+the returned route segments.
+
+Each request is guarded by a 15-second `Timer` that aborts it — Qt's QML
+`XMLHttpRequest` has no `timeout` property of its own. A request that times out, returns
+a non-200 status or yields unparseable JSON logs the reason to the Toon's console and
+replaces the duration with `—`, so an unreachable Waze reads as unavailable rather than
+freezing on a stale number. Only one request per route is ever in flight; a refresh or a
+settings change aborts the previous one.
 
 | File                           | Role                                                         |
 | ------------------------------ | ------------------------------------------------------------ |
@@ -111,10 +117,30 @@ previous value in place.
 | `TscClockTile.qml`             | The tile — both layouts, switched by `app.centerLayout`      |
 | `TscClockSettings.qml`         | Clock settings screen                                        |
 | `TscClockTravelSettings.qml`   | Two-column travel-time settings screen                       |
+| `lang/`                        | Qt translation catalogs, one per locale                      |
 | `version.txt`, `Changelog.txt` | Read by the ToonStore to detect and describe updates         |
 
-`isNxt` selects the larger font and margin values for Toon 2 (NXT) hardware. The UI is in
-Dutch, matching the rest of the Toon interface.
+`isNxt` selects the larger font and margin values for Toon 2 (NXT) hardware.
+
+## Translations
+
+The source language is Dutch, matching the rest of the Toon interface. Every user-visible
+string goes through `qsTr()`, and `lang/lang_en_GB.qm` translates them to English; the
+Toon loads the catalog matching its own locale, following the same `lang/lang_<locale>.qm`
+convention as the other ToonStore apps. Dutch needs no catalog, being the source language.
+
+`lang/lang_en_GB.ts` is the editable source and `lang/lang_en_GB.qm` the compiled form the
+Toon actually reads, so **both must be committed**. After changing or adding a string:
+
+```sh
+pip install PySide6
+pyside6-lupdate *.qml -ts lang/lang_en_GB.ts   # pick up new strings
+pyside6-lrelease lang/lang_en_GB.ts -qm lang/lang_en_GB.qm
+```
+
+`lupdate` merges rather than overwrites, marking new entries `type="unfinished"` for
+translation and stale ones `type="vanished"`. Adding a language means copying the `.ts`,
+changing its `language` attribute and compiling it to a matching `.qm`.
 
 ## Differences from upstream
 
@@ -167,9 +193,8 @@ There is no way to run the app off-device: it depends on Toon-private QML module
   requests at any time, and every fetch sends your route coordinates to Waze.
 - `thumbnailIcon` points at `drawables/clock.svg`, which is not in this repository —
   inherited from upstream, where the file is likewise absent.
-- Travel times are fetched over HTTP without a timeout; an unreachable Waze leaves the
-  last value on the tile until the route goes inactive.
-- The settings screens are Dutch-only and not translated via `qsTr`.
+- Only Dutch and English are provided. Any other locale falls back to the Dutch source
+  strings.
 
 ## License
 

@@ -28,7 +28,7 @@ App {
     // Route 1
     property string route1Start: "06:30"
     property string route1End: "09:00"
-    property string route1Label: "Thuis-Werk:"
+    property string route1Label: qsTr("Thuis-Werk:")
     property string route1FromLat: ""
     property string route1FromLon: ""
     property string route1ToLat: ""
@@ -39,7 +39,7 @@ App {
     // Route 2
     property string route2Start: "16:00"
     property string route2End: "18:30"
-    property string route2Label: "Werk-Thuis:"
+    property string route2Label: qsTr("Werk-Thuis:")
     property string route2FromLat: ""
     property string route2FromLon: ""
     property string route2ToLat: ""
@@ -52,6 +52,13 @@ App {
     property string travelTime2Str: ""
     property bool route1Active: false
     property bool route2Active: false
+
+    // The in-flight request per slot, kept so a stalled one can be aborted.
+    property var pendingXhr1: null
+    property var pendingXhr2: null
+    // Qt's QML XMLHttpRequest has no timeout property, so each request is
+    // guarded by a Timer that aborts it.
+    property int travelRequestTimeout: 15000
 
     FileIO {
         id: tscClockSettingsFile
@@ -166,9 +173,54 @@ App {
             travelTime2Str = str;
     }
 
+    function setPendingXhr(slot, xhr) {
+        if (slot === 1)
+            pendingXhr1 = xhr;
+        else
+            pendingXhr2 = xhr;
+    }
+
+    function travelTimeoutTimer(slot) {
+        return slot === 1 ? travelTimeout1 : travelTimeout2;
+    }
+
+    function routeLabel(slot) {
+        return slot === 1 ? route1Label : route2Label;
+    }
+
+    function clearTravelRequest(slot) {
+        travelTimeoutTimer(slot).stop();
+        setPendingXhr(slot, null);
+    }
+
+    // Replace the duration with a dash, so a route that cannot be reached reads
+    // as unavailable instead of silently freezing on its last known value.
+    function showTravelFailure(slot, reason) {
+        var lbl = routeLabel(slot);
+        setTravelTime(slot, (lbl ? lbl + " " : "") + "—");
+        console.log("Waze: route " + slot + " unavailable — " + reason);
+    }
+
+    // Drop the in-flight request for a slot. Pass an empty reason to abandon it
+    // silently (route switched off, or a new fetch supersedes it).
+    function abortTravelRequest(slot, reason) {
+        var xhr = slot === 1 ? pendingXhr1 : pendingXhr2;
+        if (xhr) {
+            // Detach first: abort() itself fires a final readyState change.
+            xhr.onreadystatechange = null;
+            xhr.abort();
+        }
+        clearTravelRequest(slot);
+        if (reason)
+            showTravelFailure(slot, reason);
+    }
+
     function fetchTravelTime(slot, fromLat, fromLon, toLat, toLon, label) {
+        // A refresh can land while the previous request is still open.
+        abortTravelRequest(slot, "");
         if (!fromLat || !fromLon || !toLat || !toLon) {
             console.log("Waze: skipping fetch, missing coordinates");
+            setTravelTime(slot, "");
             return;
         }
         // Accept Dutch decimal commas and stray whitespace
@@ -186,8 +238,9 @@ App {
             // Break the xhr <-> handler reference cycle so the request object
             // (and its closure) can be garbage-collected instead of leaking.
             xhr.onreadystatechange = null;
+            clearTravelRequest(slot);
             if (xhr.status !== 200) {
-                console.log("Waze: HTTP " + xhr.status + " — " + (xhr.responseText || "").substring(0, 200));
+                showTravelFailure(slot, "HTTP " + xhr.status + " — " + (xhr.responseText || "").substring(0, 200));
                 return;
             }
             try {
@@ -197,14 +250,19 @@ App {
                 var secs = 0;
                 for (var i = 0; i < results.length; i++)
                     secs += results[i].crossTime;
-                var str = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " min";
+                var str = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " " + qsTr("min");
                 setTravelTime(slot, str);
                 console.log("Waze: ok — " + str);
             } catch (e) {
-                console.log("Waze: parse error — " + e + " — body: " + (xhr.responseText || "").substring(0, 200));
+                showTravelFailure(slot, "parse error — " + e + " — body: " + (xhr.responseText || "").substring(0, 200));
             }
         };
         xhr.open("GET", url);
+        // Arm the guard before sending: a request that fails immediately calls
+        // the handler from inside send(), and that handler must be able to
+        // clear the pending request and stop the timer.
+        setPendingXhr(slot, xhr);
+        travelTimeoutTimer(slot).restart();
         xhr.send();
     }
 
@@ -241,6 +299,7 @@ App {
             }
         } else {
             route1Active = false;
+            abortTravelRequest(1, "");
             travelTime1Str = "";
         }
         if (a2) {
@@ -250,6 +309,7 @@ App {
             }
         } else {
             route2Active = false;
+            abortTravelRequest(2, "");
             travelTime2Str = "";
         }
     }
@@ -301,6 +361,20 @@ App {
         running: true
         repeat: true
         onTriggered: updateClockTiles()
+    }
+
+    Timer {
+        id: travelTimeout1
+        interval: travelRequestTimeout
+        repeat: false
+        onTriggered: abortTravelRequest(1, "no response within " + travelRequestTimeout + " ms")
+    }
+
+    Timer {
+        id: travelTimeout2
+        interval: travelRequestTimeout
+        repeat: false
+        onTriggered: abortTravelRequest(2, "no response within " + travelRequestTimeout + " ms")
     }
 
     Timer {

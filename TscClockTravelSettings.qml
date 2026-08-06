@@ -4,10 +4,10 @@ import qb.components 1.0
 Screen {
     id: tscClockTravelSettingsScreen
 
-    screenTitle: "Waze reistijd configuratie"
+    screenTitle: qsTr("Waze reistijd configuratie")
 
     onShown: {
-        addCustomTopRightButton("Opslaan");
+        addCustomTopRightButton(qsTr("Opslaan"));
         r1StartInput.text = app.route1Start;
         r1EndInput.text = app.route1End;
         r1FromLatInput.text = app.route1FromLat;
@@ -66,7 +66,7 @@ Screen {
         y: isNxt ? 60 : 50
         font.pixelSize: isNxt ? 22 : 18
         font.family: qfont.semiBold.name
-        text: "Route 1"
+        text: qsTr("Route 1")
     }
 
     Text {
@@ -80,7 +80,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Periode:"
+        text: qsTr("Periode:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -119,7 +119,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "tot"
+        text: qsTr("tot")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -159,7 +159,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Label:"
+        text: qsTr("Label:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -198,7 +198,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Van:"
+        text: qsTr("Van:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -261,7 +261,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Naar:"
+        text: qsTr("Naar:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -323,7 +323,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Alleen op werkdagen"
+        text: qsTr("Alleen op werkdagen")
         verticalAlignment: Text.AlignVCenter
     }
     OnOffToggle {
@@ -350,7 +350,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 22 : 18
         font.family: qfont.semiBold.name
-        text: "Route 2"
+        text: qsTr("Route 2")
     }
 
     Text {
@@ -364,7 +364,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Periode:"
+        text: qsTr("Periode:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -403,7 +403,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "tot"
+        text: qsTr("tot")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -443,7 +443,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Label:"
+        text: qsTr("Label:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -482,7 +482,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Van:"
+        text: qsTr("Van:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -545,7 +545,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Naar:"
+        text: qsTr("Naar:")
         verticalAlignment: Text.AlignVCenter
     }
     Rectangle {
@@ -607,7 +607,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Alleen op werkdagen"
+        text: qsTr("Alleen op werkdagen")
         verticalAlignment: Text.AlignVCenter
     }
     OnOffToggle {
@@ -635,7 +635,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lat"
+        text: qsTr("Lat")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -650,7 +650,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lon"
+        text: qsTr("Lon")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -665,7 +665,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lat"
+        text: qsTr("Lat")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -680,7 +680,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lon"
+        text: qsTr("Lon")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -695,7 +695,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lat"
+        text: qsTr("Lat")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -710,7 +710,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lon"
+        text: qsTr("Lon")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -725,7 +725,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lat"
+        text: qsTr("Lat")
         verticalAlignment: Text.AlignVCenter
     }
     Text {
@@ -740,7 +740,7 @@ Screen {
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
         color: "#555555"
-        text: "Lon"
+        text: qsTr("Lon")
         verticalAlignment: Text.AlignVCenter
     }
 
@@ -756,7 +756,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Tijdvenster"
+        text: qsTr("Tijdvenster")
         verticalAlignment: Text.AlignVCenter
     }
     OnOffToggle {
@@ -779,7 +779,7 @@ Screen {
         height: isNxt ? 36 : 28
         font.pixelSize: isNxt ? 18 : 14
         font.family: qfont.regular.name
-        text: "Tijdvenster"
+        text: qsTr("Tijdvenster")
         verticalAlignment: Text.AlignVCenter
     }
     OnOffToggle {
@@ -804,6 +804,6 @@ Screen {
         font.pixelSize: isNxt ? 15 : 12
         font.family: qfont.regular.name
         color: "#888888"
-        text: "Coördinaten in decimaal formaat (bijv. 52.3704 / 4.8952), tijd als HH:MM"
+        text: qsTr("Coördinaten in decimaal formaat (bijv. 52.3704 / 4.8952), tijd als HH:MM")
     }
 }
