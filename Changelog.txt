@@ -4,4 +4,4 @@
 - Add optional Waze travel time for up to two routes
 
 1.0.1
-- initial release 
+- initial release
