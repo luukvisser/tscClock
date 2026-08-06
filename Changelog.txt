@@ -1,2 +1,7 @@
+1.1.0
+- Add new option for center layout
+- Add option to move the day text to the date row
+- Add optional Waze travel time for up to two routes
+
 1.0.1
 - initial release 

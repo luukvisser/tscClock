@@ -14,6 +14,8 @@ Screen {
 		showSecondsToggle.isSwitchedOn = app.showSeconds;
 		showMonthInTextToggle.isSwitchedOn = app.showMonthInText;
 		showDayOfWeekToggle.isSwitchedOn = app.showDayOfWeek;
+		centerLayoutToggle.isSwitchedOn = app.centerLayout;
+		showDayOnDateToggle.isSwitchedOn = app.showDayOnDate;
 	}
 
 	onCustomButtonClicked: {
@@ -87,6 +89,7 @@ Screen {
 		font.pixelSize: isNxt ? 20 : 16
 		font.family: qfont.semiBold.name
 		text: "Maand in datum voluit geschreven"
+		opacity: app.showDate ? 1.0 : 0.35
 	}
 
 	OnOffToggle {
@@ -95,6 +98,8 @@ Screen {
 		anchors.left: showSecondsToggle.left
 		anchors.top: showMonthInTextText.top
 		leftIsSwitchedOn: false
+		enabled: app.showDate
+		opacity: app.showDate ? 1.0 : 0.35
 		onSelectedChangedByUser: {
 			if (isSwitchedOn) {
 				app.showMonthInText = true;
@@ -128,6 +133,74 @@ Screen {
 			} else {
 				app.showDayOfWeek = false;
 			}
+		}
+	}
+
+	Text {
+		id: centerLayoutText
+		anchors {
+			top: showDayOfWeekText.bottom
+			topMargin: isNxt ? 25 : 20
+			left: showDayOfWeekText.left
+		}
+		font.pixelSize: isNxt ? 20 : 16
+		font.family: qfont.semiBold.name
+		text: "Verticaal gecentreerde weergave"
+	}
+
+	OnOffToggle {
+		id: centerLayoutToggle
+		height: isNxt ? 45 : 36
+		anchors.left: showDayOfWeekToggle.left
+		anchors.top: centerLayoutText.top
+		leftIsSwitchedOn: false
+		onSelectedChangedByUser: {
+			app.centerLayout = isSwitchedOn;
+		}
+	}
+
+	Text {
+		id: showDayOnDateText
+		anchors {
+			top: centerLayoutText.bottom
+			topMargin: isNxt ? 25 : 20
+			left: centerLayoutText.left
+		}
+		font.pixelSize: isNxt ? 20 : 16
+		font.family: qfont.semiBold.name
+		text: "Dag voor datum (i.p.v. voor tijd)"
+		visible: app.showDayOfWeek
+		opacity: app.showDate ? 1.0 : 0.35
+	}
+
+	OnOffToggle {
+		id: showDayOnDateToggle
+		height: isNxt ? 45 : 36
+		anchors.left: centerLayoutToggle.left
+		anchors.top: showDayOnDateText.top
+		leftIsSwitchedOn: false
+		visible: app.showDayOfWeek
+		enabled: app.showDate
+		opacity: app.showDate ? 1.0 : 0.35
+		onSelectedChangedByUser: {
+			app.showDayOnDate = isSwitchedOn;
+		}
+	}
+
+	Text {
+		id: travelSettingsNavText
+		anchors {
+			top: showDayOnDateText.bottom
+			topMargin: isNxt ? 30 : 22
+			left: showDayOnDateText.left
+		}
+		font.pixelSize: isNxt ? 20 : 16
+		font.family: qfont.semiBold.name
+		text: "Waze reistijd »"
+
+		MouseArea {
+			anchors.fill: parent
+			onClicked: app.tscClockTravelSettings.show()
 		}
 	}
 }
