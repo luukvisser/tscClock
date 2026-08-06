@@ -1,0 +1,81 @@
+name: PR Lint
+
+on:
+    pull_request:
+
+jobs:
+    prettier:
+        name: Prettier check
+        runs-on: ubuntu-latest
+        container:
+            image: node:lts-alpine
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install prettier
+              run: npm install --global prettier@latest
+
+            - name: Run prettier check
+              run: |
+                  prettier --check \
+                    --config .prettierrc.json \
+                    --ignore-path .prettierignore \
+                    "**/*.{js,json,md,yaml,yml}"
+
+    qml-check:
+        name: QML format and lint check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.13"
+
+            - name: Install PySide6 (provides qmllint and qmlformat)
+              run: pip install "PySide6==6.11.1"
+
+            - name: Determine changed QML files
+              id: changed
+              run: |
+                  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+                  base_ref="${{ github.base_ref }}"
+                  git fetch --no-tags origin "$base_ref"
+                  files=$(git diff --name-only --diff-filter=ACMR "origin/$base_ref"...HEAD -- '*.qml')
+                  if [ -z "$files" ]; then
+                    echo "No changed QML files in this PR."
+                    echo "has_changes=false" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "Changed QML files:"
+                    echo "$files"
+                    echo "has_changes=true" >> "$GITHUB_OUTPUT"
+                    {
+                      echo "files<<EOF"
+                      echo "$files"
+                      echo "EOF"
+                    } >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Check qmlformat
+              if: steps.changed.outputs.has_changes == 'true'
+              run: |
+                  echo "${{ steps.changed.outputs.files }}" | xargs pyside6-qmlformat -i
+                  git diff --exit-code || {
+                    echo ""
+                    echo "qmlformat found formatting issues. Run locally to fix:"
+                    echo "  git diff --name-only --diff-filter=ACMR origin/${{ github.base_ref }}...HEAD -- '*.qml' | xargs pyside6-qmlformat -i"
+                    exit 1
+                  }
+
+            - name: Run qmllint
+              if: steps.changed.outputs.has_changes == 'true'
+              continue-on-error: true
+              run: |
+                  echo "${{ steps.changed.outputs.files }}" | xargs pyside6-qmllint --bare
