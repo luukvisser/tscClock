@@ -184,10 +184,26 @@ Screen {
         }
     }
 
+    // Kept on its own line rather than appended to the label above: the
+    // combined string is wide enough to run under the toggle on a Toon 1.
+    Text {
+        id: showDayOnDateNoteText
+        anchors {
+            top: showDayOnDateText.bottom
+            topMargin: isNxt ? 4 : 3
+            left: showDayOnDateText.left
+        }
+        font.pixelSize: isNxt ? 16 : 13
+        font.family: qfont.regular.name
+        text: qsTr("(datum toont dan geen jaartal)")
+        visible: app.showDayOfWeek
+        opacity: app.showDate ? 1.0 : 0.35
+    }
+
     Text {
         id: travelSettingsNavText
         anchors {
-            top: showDayOnDateText.bottom
+            top: showDayOnDateNoteText.bottom
             topMargin: isNxt ? 30 : 22
             left: showDayOnDateText.left
         }

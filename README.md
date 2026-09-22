@@ -15,20 +15,23 @@ from the top of the tile:
 
 ```
  ma 07:31 42
-    31 januari
-    Thuis-Werk: 24 min
-    Werk-Thuis: 31 min
+   31 januari 2026
+  Thuis-Werk: 24 min
+  Werk-Thuis: 31 min
 ```
 
 The centred layout stacks the same rows in a `Column` centred vertically in the tile,
 and grows the time font when the day of the week has been moved to the date row:
 
 ```
-      07:31 42
-     ma 31 januari
-    Thuis-Werk: 24 min
-    Werk-Thuis: 31 min
+       07:31 42
+    ma 31 januari
+  Thuis-Werk: 24 min
+  Werk-Thuis: 31 min
 ```
+
+Moving the day to the date row drops the year from it: the day, a long month name and
+the year together are wider than the tile.
 
 Every row below the time is optional; a row that is switched off or has no value takes
 up no vertical space. Tapping the tile opens the settings screen.
@@ -60,14 +63,14 @@ the tile via the tile screen's **+** button (category _general_, label _Klok-TSC
 
 Tap the tile to open **TSC Klok configuratie**:
 
-| Setting                             | Default | Description                                                                 |
-| ----------------------------------- | ------- | --------------------------------------------------------------------------- |
-| `Toon datum`                        | on      | Show the date row                                                           |
-| `Toon seconden in de tijd`          | on      | Show seconds in small type next to the time                                 |
-| `Maand in datum voluit geschreven`  | on      | Month as a word (`31 januari`) instead of a number (`31-01`)                |
-| `Toon dag van de week`              | on      | Show the two-letter day abbreviation                                        |
-| `Verticaal gecentreerde weergave`   | off     | Use the centred layout instead of the fixed-offset one                      |
-| `Dag voor datum (i.p.v. voor tijd)` | off     | Move the day abbreviation to the date row, freeing width for a larger clock |
+| Setting                             | Default | Description                                                                                                                                |
+| ----------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Toon datum`                        | on      | Show the date row                                                                                                                          |
+| `Toon seconden in de tijd`          | on      | Show seconds in small type next to the time                                                                                                |
+| `Maand in datum voluit geschreven`  | on      | Month as a word (`31 januari`) instead of a number (`31-01`)                                                                               |
+| `Toon dag van de week`              | on      | Show the two-letter day abbreviation                                                                                                       |
+| `Verticaal gecentreerde weergave`   | off     | Use the centred layout instead of the fixed-offset one                                                                                     |
+| `Dag voor datum (i.p.v. voor tijd)` | off     | Move the day abbreviation to the date row, freeing width for a larger clock. The date then omits the year, to keep the row inside the tile |
 
 `Waze reistijd »` at the bottom opens the travel-time screen. Press **Opslaan** on either
 screen to save; settings are written to `/mnt/data/tsc/tscClock.userSettings.json` and
@@ -158,8 +161,8 @@ to their defaults when absent.
 ## Versioning
 
 `version.txt` follows [semantic versioning](https://semver.org/) and continues upstream's
-numbering, which stopped at `1.0.1`. This fork is at **1.1.0** — a minor bump, which is
-the right call: every change above is additive and backwards compatible, with no removed
+numbering, which stopped at `1.0.1`. This fork is at **1.1.2**: the features above landed
+as a minor bump, every change since being a backwards-compatible fix, with no removed
 settings and no change to the on-disk settings format.
 
 Keep `version.txt` and `Changelog.txt` in step when releasing; the ToonStore uses the

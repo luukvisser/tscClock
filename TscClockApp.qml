@@ -151,12 +151,21 @@ App {
 
         var dateBase = showMonthInText ? i18n.dateTime(now, i18n.mon_full) : i18n.dateTime(now, i18n.mon_num);
         if (showDayOfWeek && showDayOnDate) {
-            dateStr = i18n.dateTime(now, i18n.dow_full).substring(0, 2).toLowerCase() + " " + dateBase;
+            // Prefixing the day costs width the tile does not have with a long
+            // month name ("do 22 september 2026"), so the year makes way for it.
+            dateStr = i18n.dateTime(now, i18n.dow_full).substring(0, 2).toLowerCase() + " " + stripYear(dateBase);
         } else {
             dateStr = dateBase;
         }
 
         checkTravelTimeWindow();
+    }
+
+    // Remove the four-digit year and the separator that binds it to the rest,
+    // whichever side it sits on: "22 september 2026" -> "22 september",
+    // "22-09-2026" -> "22-09". Locale formats without a year pass through.
+    function stripYear(str) {
+        return str.replace(/[\s,.\-\/]*\b\d{4}\b[\s,.\-\/]*/, " ").trim();
     }
 
     function minutesOfDay(timeStr) {

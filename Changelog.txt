@@ -1,3 +1,6 @@
+1.1.2
+- Drop the year from the date row when the day of the week is moved onto it
+
 1.1.1
 - Abort Waze requests that stall, and show a dash instead of a stale travel time
 - Mark user-visible strings with qsTr and add an English translation

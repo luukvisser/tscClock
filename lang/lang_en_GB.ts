@@ -55,6 +55,10 @@
         <translation>Day before date (instead of before time)</translation>
     </message>
     <message>
+        <source>(datum toont dan geen jaartal)</source>
+        <translation>(the date then omits the year)</translation>
+    </message>
+    <message>
         <source>Waze reistijd »</source>
         <translation>Waze travel time »</translation>
     </message>
