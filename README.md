@@ -1,7 +1,7 @@
 # tscClock
 
 A clock tile for the **Eneco Toon** thermostat display: time, seconds, date and day of
-the week, plus optional **Waze travel times** for up to two routes.
+the week, plus optional **travel times** (via TomTom) for up to two routes.
 
 This is a fork of
 [ToonSoftwareCollective/tscClock](https://github.com/ToonSoftwareCollective/tscClock),
@@ -37,11 +37,15 @@ up no vertical space. Tapping the tile opens the settings screen.
 
 - A **rooted Toon** running the ToonStore client (`tsc`). Settings are stored in
   `/mnt/data/tsc/`, which is the ToonStore data directory.
-- For travel times only: the Toon must be able to reach `routing-livemap-row.waze.com`
-  over HTTPS. No account or API key is needed.
+- For travel times only: a free **TomTom API key**, and the Toon must be able to reach
+  `api.tomtom.com` over HTTPS. Create the key at
+  [developer.tomtom.com](https://developer.tomtom.com/) (sign up, then copy the default
+  key from the dashboard). The free tier allows 2,500 requests a day at the time of writing; this app makes at
+  most one request per active route every 5 minutes, i.e. at most 576 a day for two
+  routes that are always on.
 
-The clock itself works fully offline; leave the route coordinates blank and no network
-requests are made.
+The clock itself works fully offline; leave the route coordinates or the API key blank
+and no network requests are made.
 
 ## Installation
 
@@ -69,11 +73,15 @@ Tap the tile to open **TSC Klok configuratie**:
 | `Verticaal gecentreerde weergave`   | off     | Use the centred layout instead of the fixed-offset one                      |
 | `Dag voor datum (i.p.v. voor tijd)` | off     | Move the day abbreviation to the date row, freeing width for a larger clock |
 
-`Waze reistijd »` at the bottom opens the travel-time screen. Press **Opslaan** on either
+`Reistijd »` at the bottom opens the travel-time screen. Press **Opslaan** on either
 screen to save; settings are written to `/mnt/data/tsc/tscClock.userSettings.json` and
 reloaded on startup.
 
 ### Travel times
+
+The screen **Reistijd configuratie** holds one shared field, `TomTom API-sleutel`, for
+the API key described under [Requirements](#requirements). Without a key no travel times
+are fetched and the rows stay hidden.
 
 Two independent routes can be configured, each with the same set of fields:
 
@@ -96,29 +104,34 @@ shows, or read them from the URL after `@`.
 
 `TscClockApp.qml` ticks a 1-second `Timer` that rebuilds the time and date strings via
 `i18n.dateTime` and then calls `checkTravelTimeWindow()`. A route that becomes active
-triggers one Waze request; a route that goes inactive is cleared immediately, so a stale
+triggers one TomTom request; a route that goes inactive is cleared immediately, so a stale
 duration can never linger on the tile. A second timer refreshes the active routes every
 5 minutes.
 
-Travel times come from Waze's public live-map routing endpoint
-(`routing-livemap-row.waze.com/RoutingManager/routingRequest`), summing `crossTime` over
-the returned route segments.
+Travel times come from the TomTom Routing API's `calculateRoute` endpoint
+(`api.tomtom.com/routing/1/calculateRoute/<from>:<to>/json`) with `traffic=true`, so the
+duration includes current congestion. The tile shows `routes[0].summary.travelTimeInSeconds`
+rounded to minutes. The API key is never written to the console log.
+
+Up to version 1.1.1 the app used Waze's unofficial live-map endpoint. Since 30 September
+2026 Waze rejects any client that does not present a current browser's TLS fingerprint,
+which the Toon's `XMLHttpRequest` cannot do, so every request returned HTTP 403.
 
 Each request is guarded by a 15-second `Timer` that aborts it — Qt's QML
 `XMLHttpRequest` has no `timeout` property of its own. A request that times out, returns
 a non-200 status or yields unparseable JSON logs the reason to the Toon's console and
-replaces the duration with `—`, so an unreachable Waze reads as unavailable rather than
+replaces the duration with `—`, so an unreachable service reads as unavailable rather than
 freezing on a stale number. Only one request per route is ever in flight; a refresh or a
 settings change aborts the previous one.
 
-| File                           | Role                                                         |
-| ------------------------------ | ------------------------------------------------------------ |
-| `TscClockApp.qml`              | App root: settings persistence, clock tick, Waze fetch logic |
-| `TscClockTile.qml`             | The tile — both layouts, switched by `app.centerLayout`      |
-| `TscClockSettings.qml`         | Clock settings screen                                        |
-| `TscClockTravelSettings.qml`   | Two-column travel-time settings screen                       |
-| `lang/`                        | Qt translation catalogs, one per locale                      |
-| `version.txt`, `Changelog.txt` | Read by the ToonStore to detect and describe updates         |
+| File                           | Role                                                           |
+| ------------------------------ | -------------------------------------------------------------- |
+| `TscClockApp.qml`              | App root: settings persistence, clock tick, TomTom fetch logic |
+| `TscClockTile.qml`             | The tile — both layouts, switched by `app.centerLayout`        |
+| `TscClockSettings.qml`         | Clock settings screen                                          |
+| `TscClockTravelSettings.qml`   | Two-column travel-time settings screen                         |
+| `lang/`                        | Qt translation catalogs, one per locale                        |
+| `version.txt`, `Changelog.txt` | Read by the ToonStore to detect and describe updates           |
 
 `isNxt` selects the larger font and margin values for Toon 2 (NXT) hardware.
 
@@ -146,7 +159,7 @@ changing its `language` attribute and compiling it to a matching `.qm`.
 
 Upstream has been unchanged since December 2022 (version 1.0.1). This fork adds:
 
-- **Waze travel times** for up to two routes, with per-route label, time window,
+- **Travel times** (TomTom) for up to two routes, with per-route label, time window,
   workdays-only toggle and a dedicated settings screen.
 - **Vertically centred layout** as an alternative to the fixed baseline offsets.
 - **Day of the week on the date row**, which frees horizontal space and allows a larger
@@ -158,9 +171,10 @@ to their defaults when absent.
 ## Versioning
 
 `version.txt` follows [semantic versioning](https://semver.org/) and continues upstream's
-numbering, which stopped at `1.0.1`. This fork is at **1.1.0** — a minor bump, which is
-the right call: every change above is additive and backwards compatible, with no removed
-settings and no change to the on-disk settings format.
+numbering, which stopped at `1.0.1`. This fork is at **1.2.0**. Every change above is additive and backwards compatible:
+no settings were removed, and new keys in the on-disk settings file fall back to their
+defaults when absent. Switching the travel-time source to TomTom is a minor bump for the
+same reason, although existing travel-time users must enter an API key once.
 
 Keep `version.txt` and `Changelog.txt` in step when releasing; the ToonStore uses the
 former to detect updates and shows the latter to the user.
@@ -189,8 +203,8 @@ There is no way to run the app off-device: it depends on Toon-private QML module
 
 ## Known limitations
 
-- The Waze endpoint is undocumented and unofficial. It can change or start refusing
-  requests at any time, and every fetch sends your route coordinates to Waze.
+- Every fetch sends your route coordinates to TomTom. The API key is stored in plain text
+  in `/mnt/data/tsc/tscClock.userSettings.json`, like the other settings.
 - `thumbnailIcon` points at `drawables/clock.svg`, which is not in this repository —
   inherited from upstream, where the file is likewise absent.
 - Only Dutch and English are provided. Any other locale falls back to the Dutch source

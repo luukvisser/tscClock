@@ -55,16 +55,12 @@
         <translation>Day before date (instead of before time)</translation>
     </message>
     <message>
-        <source>Waze reistijd »</source>
-        <translation>Waze travel time »</translation>
+        <source>Reistijd »</source>
+        <translation>Travel time »</translation>
     </message>
 </context>
 <context>
     <name>TscClockTravelSettings</name>
-    <message>
-        <source>Waze reistijd configuratie</source>
-        <translation>Waze travel time settings</translation>
-    </message>
     <message>
         <source>Opslaan</source>
         <translation>Save</translation>
@@ -80,6 +76,10 @@
     <message>
         <source>Periode:</source>
         <translation>Period:</translation>
+    </message>
+    <message>
+        <source>Reistijd configuratie</source>
+        <translation>Travel time settings</translation>
     </message>
     <message>
         <source>tot</source>
@@ -112,6 +112,10 @@
     <message>
         <source>Alleen op werkdagen</source>
         <translation>Weekdays only</translation>
+    </message>
+    <message>
+        <source>TomTom API-sleutel:</source>
+        <translation>TomTom API key:</translation>
     </message>
     <message>
         <source>Coördinaten in decimaal formaat (bijv. 52.3704 / 4.8952), tijd als HH:MM</source>

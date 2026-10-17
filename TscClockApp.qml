@@ -47,6 +47,9 @@ App {
     property bool route2WorkdaysOnly: false
     property bool route2WindowEnabled: false   // false = ignore time window, always active
 
+    // TomTom Routing API key (free tier at developer.tomtom.com)
+    property string tomtomApiKey: ""
+
     // Runtime — not persisted
     property string travelTime1Str: ""
     property string travelTime2Str: ""
@@ -117,6 +120,8 @@ App {
                 route1WindowEnabled = (settings['route1WindowEnabled'] == "true");
             if (settings['route2WindowEnabled'])
                 route2WindowEnabled = (settings['route2WindowEnabled'] == "true");
+            if (settings['tomtomApiKey'])
+                tomtomApiKey = settings['tomtomApiKey'];
         } catch (e) {}
     }
 
@@ -198,7 +203,7 @@ App {
     function showTravelFailure(slot, reason) {
         var lbl = routeLabel(slot);
         setTravelTime(slot, (lbl ? lbl + " " : "") + "—");
-        console.log("Waze: route " + slot + " unavailable — " + reason);
+        console.log("TomTom: route " + slot + " unavailable — " + reason);
     }
 
     // Drop the in-flight request for a slot. Pass an empty reason to abandon it
@@ -219,7 +224,13 @@ App {
         // A refresh can land while the previous request is still open.
         abortTravelRequest(slot, "");
         if (!fromLat || !fromLon || !toLat || !toLon) {
-            console.log("Waze: skipping fetch, missing coordinates");
+            console.log("TomTom: skipping fetch, missing coordinates");
+            setTravelTime(slot, "");
+            return;
+        }
+        var key = String(tomtomApiKey).trim();
+        if (!key) {
+            console.log("TomTom: skipping fetch, no API key set");
             setTravelTime(slot, "");
             return;
         }
@@ -229,8 +240,12 @@ App {
         toLat = String(toLat).trim().replace(",", ".");
         toLon = String(toLon).trim().replace(",", ".");
         var lbl = label || "";
-        var url = "https://routing-livemap-row.waze.com/RoutingManager/routingRequest" + "?from=x%3A" + fromLon + "+y%3A" + fromLat + "&to=x%3A" + toLon + "+y%3A" + toLat + "&at=0&returnJSON=true&returnGeometries=false" + "&returnInstructions=false&timeout=60000&nPaths=1";
-        console.log("Waze: GET " + url);
+        // Locations are lat,lon pairs joined by a colon; traffic=true makes the
+        // travel time include current congestion.
+        var path = "https://api.tomtom.com/routing/1/calculateRoute/" + fromLat + "," + fromLon + ":" + toLat + "," + toLon + "/json?traffic=true&travelMode=car&routeType=fastest";
+        var url = path + "&key=" + encodeURIComponent(key);
+        // Never write the API key to the log.
+        console.log("TomTom: GET " + path + "&key=…");
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== XMLHttpRequest.DONE)
@@ -245,14 +260,12 @@ App {
             }
             try {
                 var data = JSON.parse(xhr.responseText);
-                // nPaths=1 returns data.response.results; multi-path returns data.alternatives[].
-                var results = data.alternatives ? data.alternatives[0].response.results : data.response.results;
-                var secs = 0;
-                for (var i = 0; i < results.length; i++)
-                    secs += results[i].crossTime;
+                var secs = data.routes[0].summary.travelTimeInSeconds;
+                if (typeof secs !== "number")
+                    throw "no travelTimeInSeconds in response";
                 var str = (lbl ? lbl + " " : "") + Math.round(secs / 60) + " " + qsTr("min");
                 setTravelTime(slot, str);
-                console.log("Waze: ok — " + str);
+                console.log("TomTom: ok — " + str);
             } catch (e) {
                 showTravelFailure(slot, "parse error — " + e + " — body: " + (xhr.responseText || "").substring(0, 200));
             }
@@ -346,7 +359,8 @@ App {
             "route1WorkdaysOnly": route1WorkdaysOnly ? "true" : "false",
             "route2WorkdaysOnly": route2WorkdaysOnly ? "true" : "false",
             "route1WindowEnabled": route1WindowEnabled ? "true" : "false",
-            "route2WindowEnabled": route2WindowEnabled ? "true" : "false"
+            "route2WindowEnabled": route2WindowEnabled ? "true" : "false",
+            "tomtomApiKey": tomtomApiKey
         };
 
         var doc3 = new XMLHttpRequest();

@@ -1,3 +1,6 @@
+1.2.0
+- Get travel times from the TomTom Routing API instead of Waze, which now rejects the Toon's requests (HTTP 403); needs a free TomTom API key
+
 1.1.1
 - Abort Waze requests that stall, and show a dash instead of a stale travel time
 - Mark user-visible strings with qsTr and add an English translation
