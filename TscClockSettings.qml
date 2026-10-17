@@ -193,7 +193,7 @@ Screen {
         }
         font.pixelSize: isNxt ? 20 : 16
         font.family: qfont.semiBold.name
-        text: qsTr("Waze reistijd »")
+        text: qsTr("Reistijd »")
 
         MouseArea {
             anchors.fill: parent

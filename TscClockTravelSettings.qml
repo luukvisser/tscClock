@@ -4,7 +4,7 @@ import qb.components 1.0
 Screen {
     id: tscClockTravelSettingsScreen
 
-    screenTitle: qsTr("Waze reistijd configuratie")
+    screenTitle: qsTr("Reistijd configuratie")
 
     onShown: {
         addCustomTopRightButton(qsTr("Opslaan"));
@@ -26,6 +26,7 @@ Screen {
         r2LabelInput.text = app.route2Label;
         r2WorkdaysToggle.isSwitchedOn = app.route2WorkdaysOnly;
         r2WindowToggle.isSwitchedOn = app.route2WindowEnabled;
+        apiKeyInput.text = app.tomtomApiKey;
     }
 
     onCustomButtonClicked: {
@@ -47,6 +48,7 @@ Screen {
         app.route2ToLon = r2ToLonInput.text;
         app.route2WorkdaysOnly = r2WorkdaysToggle.isSwitchedOn;
         app.route2WindowEnabled = r2WindowToggle.isSwitchedOn;
+        app.tomtomApiKey = apiKeyInput.text.trim();
         app.saveSettings();
         // Re-evaluate right now so the tile reflects the new settings immediately
         // (clearing routes that are no longer active, fetching ones that are),
@@ -793,11 +795,52 @@ Screen {
         leftIsSwitchedOn: false
     }
 
+    // ── TomTom API key (shared by both routes) ───────────────────────────────
+
+    Text {
+        id: apiKeyLabel
+        anchors {
+            top: r1WorkdaysLabel.bottom
+            topMargin: isNxt ? 18 : 12
+            left: route1Header.left
+        }
+        height: isNxt ? 36 : 28
+        font.pixelSize: isNxt ? 18 : 14
+        font.family: qfont.regular.name
+        text: qsTr("TomTom API-sleutel:")
+        verticalAlignment: Text.AlignVCenter
+    }
+    Rectangle {
+        id: apiKeyBox
+        anchors {
+            left: apiKeyLabel.right
+            leftMargin: isNxt ? 10 : 8
+            verticalCenter: apiKeyLabel.verticalCenter
+        }
+        width: isNxt ? 420 : 340
+        height: isNxt ? 36 : 28
+        border.color: "#aaaaaa"
+        border.width: 1
+        radius: 2
+        color: "white"
+        TextInput {
+            id: apiKeyInput
+            anchors {
+                fill: parent
+                margins: isNxt ? 6 : 4
+            }
+            font.pixelSize: isNxt ? 18 : 14
+            font.family: qfont.regular.name
+            color: "#333333"
+            clip: true
+        }
+    }
+
     // ── Hint ─────────────────────────────────────────────────────────────────
 
     Text {
         anchors {
-            top: r1WorkdaysLabel.bottom
+            top: apiKeyLabel.bottom
             topMargin: isNxt ? 18 : 12
             left: route1Header.left
         }
