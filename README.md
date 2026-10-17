@@ -40,9 +40,12 @@ up no vertical space. Tapping the tile opens the settings screen.
 - For travel times only: a free **TomTom API key**, and the Toon must be able to reach
   `api.tomtom.com` over HTTPS. Create the key at
   [developer.tomtom.com](https://developer.tomtom.com/) (sign up, then copy the default
-  key from the dashboard). The free tier allows 2,500 requests a day at the time of writing; this app makes at
-  most one request per active route every 5 minutes, i.e. at most 576 a day for two
-  routes that are always on.
+  key from the dashboard). TomTom's [pricing page](https://docs.tomtom.com/pricing) lists
+  20,000 free Routing API requests a month. This app makes one request per active route
+  every 5 minutes, plus one when a route becomes active or settings are saved. Two routes
+  that are always on use about 17,900 requests in a 31-day month, which is close to the
+  limit; switch on `Tijdvenster` to stay well inside it. Once the allowance is used up,
+  TomTom answers HTTP 429 and the tile shows `—` until it resets.
 
 The clock itself works fully offline; leave the route coordinates or the API key blank
 and no network requests are made.
